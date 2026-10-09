@@ -1,0 +1,6 @@
+/.verification/
+/build/
+/target/
+/app/target/
+/drill/target/
+**/__pycache__/

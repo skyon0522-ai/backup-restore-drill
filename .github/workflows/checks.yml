@@ -1,0 +1,30 @@
+name: Verify copied source and synthetic restore drill
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  synthetic-local-drill:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select the recorded Rust toolchain
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+      - name: Verify the source and run the README procedure
+        shell: bash
+        run: |
+          python3 tools/verify_source.py
+          BUILD_PARENT=$(mktemp -d)
+          printf 'BUILD_PARENT=%s\n' "$BUILD_PARENT" >> "$GITHUB_ENV"
+          mkdir "$BUILD_PARENT/receipts"
+          cargo build --manifest-path app/Cargo.toml --locked --no-default-features --target-dir "$BUILD_PARENT/cli"
+          cargo test --manifest-path drill/Cargo.toml --locked --target-dir "$BUILD_PARENT/drill"
+          cargo build --manifest-path drill/Cargo.toml --locked --target-dir "$BUILD_PARENT/drill"
+          "$BUILD_PARENT/drill/debug/rustic-synthetic-drill" "$BUILD_PARENT/cli/debug/rustic" "$BUILD_PARENT/receipts"
+          python3 tools/verify_source.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: synthetic-drill-receipts
+          path: ${{ env.BUILD_PARENT }}/receipts

@@ -1,0 +1,127 @@
+--- components/rustic-cli/Cargo.toml
++++ app/Cargo.toml
+@@ -62,8 +62,8 @@
+ 
+ [dependencies]
+ abscissa_core = { version = "0.9.0", default-features = false, features = ["application"] }
+-rustic_backend = { git = "https://github.com/rustic-rs/rustic_core", features = ["cli"] }
+-rustic_core = { git = "https://github.com/rustic-rs/rustic_core", features = ["cli"] }
++rustic_backend = { path = "../components/rustic-core-workspace/crates/backend", features = ["cli"] }
++rustic_core = { path = "../components/rustic-core-workspace/crates/core", features = ["cli"] }
+ 
+ # allocators
+ jemallocator-global = { version = "0.3.2", optional = true }
+@@ -149,7 +149,7 @@
+ quickcheck = "1"
+ quickcheck_macros = "1"
+ rstest = "0.26"
+-rustic_testing = { version = "0.5.0" }
++rustic_testing = { path = "../components/rustic-core-workspace/crates/testing", version = "0.5.0" }
+ tar = "0.4.44"
+ tempfile = "3.25"
+ 
+--- components/rustic-cli/Cargo.lock
++++ app/Cargo.lock
+@@ -5755,7 +5755,7 @@
+  "rhai",
+  "rstest",
+  "rustic_backend",
+- "rustic_core 0.13.0 (git+https://github.com/rustic-rs/rustic_core)",
++ "rustic_core",
+  "rustic_testing",
+  "scopeguard",
+  "self_update",
+@@ -5775,7 +5775,6 @@
+ [[package]]
+ name = "rustic_backend"
+ version = "0.7.0"
+-source = "git+https://github.com/rustic-rs/rustic_core#6fa7b56ebc750c6af0e6bc6bbe90c1781b60a38d"
+ dependencies = [
+  "aho-corasick",
+  "backon",
+@@ -5794,7 +5793,7 @@
+  "rand 0.10.2",
+  "rayon",
+  "reqwest",
+- "rustic_core 0.13.0 (git+https://github.com/rustic-rs/rustic_core)",
++ "rustic_core",
+  "semver",
+  "serde",
+  "strum",
+@@ -5814,61 +5813,6 @@
+ [[package]]
+ name = "rustic_core"
+ version = "0.13.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ddab48a7f892b4943d9bffe7be44746c443982ae06ffcc3b2be55b31999b1725"
+-dependencies = [
+- "aes256ctr_poly1305aes",
+- "backon",
+- "binrw",
+- "bytes",
+- "bytesize",
+- "cached 2.0.2",
+- "cachedir",
+- "crossbeam-channel",
+- "derive_more",
+- "derive_setters",
+- "dirs",
+- "displaydoc",
+- "dunce",
+- "ecow",
+- "enum-map",
+- "enumset",
+- "filetime",
+- "gethostname",
+- "hex",
+- "ignore",
+- "integer-sqrt",
+- "itertools 0.15.0",
+- "jiff",
+- "log",
+- "nix 0.31.3",
+- "pariter",
+- "path-dedot",
+- "quick_cache",
+- "rand 0.10.2",
+- "rayon",
+- "runtime-format",
+- "rustic_cdc",
+- "scrypt 0.12.0",
+- "serde",
+- "serde-aux",
+- "serde_derive",
+- "serde_json",
+- "serde_with",
+- "sha2 0.11.0",
+- "shell-words",
+- "smallvec",
+- "strum",
+- "thiserror 2.0.20",
+- "walkdir",
+- "xattr",
+- "zstd",
+-]
+-
+-[[package]]
+-name = "rustic_core"
+-version = "0.13.0"
+-source = "git+https://github.com/rustic-rs/rustic_core#6fa7b56ebc750c6af0e6bc6bbe90c1781b60a38d"
+ dependencies = [
+  "aes256ctr_poly1305aes",
+  "backon",
+@@ -5924,13 +5868,11 @@
+ [[package]]
+ name = "rustic_testing"
+ version = "0.5.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4d80b5a82ac3b11755cf8fae4813e6f24fce8706382190fd2cb8e82ca51f5f3f"
+ dependencies = [
+  "aho-corasick",
+  "bytes",
+  "enum-map",
+- "rustic_core 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
++ "rustic_core",
+  "tempfile",
+ ]
+ 

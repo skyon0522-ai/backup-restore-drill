@@ -1,0 +1,13 @@
+# This is an example how to configure the copy command to copy snapshots from one repository to another
+# The targets of the copy command cannot be specified on the command line, but must be in a config file like this.
+# If the config file is named "copy_example.toml", run "rustic -P copy_example copy" to copy all snapshots.
+# See "rustic copy --help" for options how to select or filter snapshots to copy.
+
+# [repository] specified the source repository
+[repository]
+repository = "/tmp/repo"
+password = "test"
+
+# you can specify multiple targets. Note that each target must be configured via a config profile file
+[copy]
+targets = ["full", "rustic"]

@@ -1,0 +1,287 @@
+# Full rustic config file containing all options which are available through the config file.
+#
+# This file should be placed in the user's local config dir (~/.config/rustic/) or in the global
+# config dir (/etc/rustic).
+# If you save it under NAME.toml, use "rustic -P NAME" to access this profile.
+#
+# Note that most options can be overwritten by the corresponding command line option.
+
+# Global options: These options are used for all commands.
+[global]
+use-profiles = []
+profile-substitute-env = false
+dry-run = false
+log-level = "info" # any of "off", "error", "warn", "info", "debug", "trace"; default: "info"
+log-level-logfile = "info" # any of "off", "error", "warn", "info", "debug", "trace"; default: "info"
+log-level-dryrun = "info" # any of "off", "error", "warn", "info", "debug", "trace"; default: "info"
+log-level-dependencies = "warn" # any of "off", "error", "warn", "info", "debug", "trace"; default: "warn"
+log-file = "/path/to/rustic.log" # Default: not set
+no-progress = false
+json-progress = false
+progress-interval = "100ms"
+group-by = "host,label,paths"
+check-index = false
+show-time-offset = false
+prometheus = "http://push-gateway/"
+prometheus-user = "user"
+prometheus-pass = "secret"
+# Sending metrics directly to the Prometheus in this example
+# See https://prometheus.io/docs/guides/opentelemetry/
+opentelemetry = "http://prometheus/api/v1/otlp/v1/metrics"
+
+# Global hooks: The given commands are called for every command
+[global.hooks]
+run-before = [
+  # long form giving command and args explicitly and allow to specify failure behavior
+  { command = "echo", args = ["before"], on-failure = "warn" }, # allowed values for on-failure: "error" (default), "warn", "ignore"
+] # Default: []
+run-after = ["echo after"] # Run after if successful, short version, default: []
+run-failed = ["echo failed"] # Default: []
+run-finally = ["echo finally"] # Always run after, default: []
+
+# Global env variables: These are set by rustic before calling a subcommand, e.g. rclone or commands
+# defined in the repository options.
+[global.env]
+# This is only an example how to set an rclone env variable. Default: No variables are defined.
+RCLONE_XXX = "true"
+
+[global.metrics-labels]
+label-a = "xxx"
+
+# Repository options: These options define which backend to use and which password to use.
+[repository]
+repository = "/repo/rustic" # Must be set
+repo-hot = "/my/hot/repo" # Default: not set
+no-cache = false
+cache-dir = "/my/rustic/cachedir" # Default: Applications default cache dir, e.g. ~/.cache/rustic
+# use either warm-up (warm-up by file access) or warm-up-command to specify warming up
+warm-up = false
+warm-up-command = "warmup.sh %id" # Default: not set
+warm-up-wait = "10min" # Default: not set
+warm-up-wait-command = "warmup_wait.sh" # Default: not set
+warm-up-batch = 1
+# one of the following credential options should be set; if not you will be always asked for a password
+key = '{"mac":{"k":"TEQN3py56U36eH4hTTgaUA==","r":"+/Cc+P7jN42a7bZVZYyAcw=="},"encrypt":"LKyGDH7dfX24a9u+3q8DgvuFVDfI3fNrzeo6l4r8u64="}'
+key-file = "/my/key.txt"
+key-command = "my_key_command.sh"
+password = "mySecretPassword"
+password-file = "/my/password.txt"
+password-command = "my_command.sh"
+
+# Additional repository options - depending on backend. These can be only set in the config file or using env variables.
+# For env variables use upper snake case and prefix with "RUSTIC_REPO_OPT_", e.g. `use-passwort = "true"` becomes
+# `RUSTIC_REPO_OPT_USE_PASSWORT=true`
+[repository.options]
+post-create-command = "par2create -qq -n1 -r5 %file" # Only local backend; Default: not set
+post-delete-command = "sh -c \"rm -f %file*.par2\"" # Only local backend; Default: not set
+retry = "default" # Only rest/rclone/all opendal backends; Allowed values: "false"/"off", "default" or number of retries
+timeout = "10min" # Only rest/rclone backend
+rclone-command = "rclone serve restic --addr localhost:0" # Only rclone; Default: not set
+use-password = "true" # Only rclone
+rest-url = "http://localhost:8000" # Only rclone; Default: determine REST URL from rclone output
+connections = "20" # Only opendal backends; Default: Not set
+throttle = "10kB,250MB" # limit and burst per second; only opendal backends; burst size *must* be greater than repository pack size; Default: Not set
+# Note that opendal backends use several service-dependent options which may be specified here, see
+# https://opendal.apache.org/docs/rust/opendal/services/index.html
+
+# Additional repository options for the hot part - depending on backend. These can be only set in the config file or
+# using env variables.
+# For env variables use upper snake case and prefix with "RUSTIC_REPO_OPTHOT_"
+[repository.options-hot]
+# see [repository.options]
+
+# Additional repository options for the cold part - depending on backend. These can be only set in the config file or
+# using env variables.
+# For env variables use upper snake case and prefix with "RUSTIC_REPO_OPTCOLD_"
+[repository.options-cold]
+# see [repository.options]
+
+# Repository hooks: The given commands are called for commands accessing the repository.
+[repository.hooks]
+run-before = ["echo before"] # Default: []
+run-after = ["echo after"] # Run after if successful, default: []
+run-failed = ["echo failed"] # Default: []
+run-finally = ["echo finally"] # Always run after, default: []
+
+# init options only apply when initializing a repo and set the in-repo configuration. Those can be changed using the `config` command
+[init]
+set-version = 2 # sets repository version
+set-chunker = "rabin" # currently, "rabin" and "fixed_size" is supported
+set-chunk-size = "1 MiB"
+set-chunk-min-size = "512 kiB"
+set-chunk-max-size = "8 MiB"
+set-compression = 5
+set-append-only = false
+set-datapack-size = "32 MiB"
+set-datapack-size-limit = "4 GiB"
+set-datapack-growfactor = 32
+set-treepack-size = "4 MiB"
+set-treepack-size-limit = "4 GiB"
+set-treepack-growfactor = 32
+set-min-packsize-tolerate-percent = 30
+set-max-packsize-tolerate-percent = 0
+set-extra-verify = true
+
+# Snapshot-filter options: These options apply to all commands that use snapshot filters
+[snapshot-filter]
+filter-hosts = ["host1", "host2"] # Default: []
+filter-labels = ["label1", "label2"] # Default: []
+filter-tags = ["tag1,tag2", "tag3"] # Default: []
+filter-tags-exact = ["tag1,tag2", "tag2"] # Default: []
+filter-paths = ["path1", "path2,path3"] # Default: []
+filter-paths-exact = ["path1", "path2,path3"] # Default: []
+filter-after = "2024-01-01" # Default: not set
+filter-before = "2024-02-05 12:15" # Default: not set
+filter-size = "200MiB" # Default: not set
+filter-size-added = "1 MB..10MB" # Default: not set
+filter-jq = '.description | contains ("test")' # Default: no jq filter function
+filter-last = "5" # Default: not set
+
+# Backup options: These options are used for all sources when calling the backup command.
+# They can be overwritten by source-specific options (see below) or command line options.
+[backup]
+label = "label" # Default: not set
+tags = ["tag1", "tag2"]
+description = "my description" # Default: not set
+description-from = "/path/to/description.txt" # Default: not set
+delete-never = false
+delete-after = "5d" # Default: not set
+host = "manually_set_host" # Default: host name
+group-by = "host,label,paths" # Can be any combination of host,label,paths,tags
+parents = ["123abc"] # Default: not set
+force = false
+ignore-ctime = false
+ignore-inode = false
+stdin-command = "echo test" # Default: empty
+stdin-filename = "stdin" # Only for stdin source
+as-path = "/my/path" # Default: not set; Note: This only works if source contains of a single path.
+set-atime = "mtime" # Allowed: "yes", "no", "mtime"
+set-ctime = "yes" # Allowed: "yes", "no", "mtime"
+set-devid = "hardlink" # Allowed: "yes", "no", "hardlink"
+set-xattrs = "yes" # Allowed: "yes", "no"
+set-blockdev = "special" # Allowed: "special", "file"
+globs = []
+iglobs = []
+glob-files = []
+iglob-files = []
+git-ignore = false
+no-require-git = false
+exclude-if-present = [".nobackup", "CACHEDIR.TAG"] # Default: not set
+exclude-if-xattr = [
+  "com.apple.metadata:com_apple_backup_excludeItem",
+] # Default: not set
+custom-ignorefiles = [".rusticignore", ".backupignore"] # Default: not set
+one-file-system = false
+exclude-larger-than = "100MB" # Default: not set
+json = false
+init = false
+no-scan = false
+skip-if-unchanged = false
+metrics-job = "my-backup-jobs" # Only used if global prometheus or opentelemetry option is set; default: not set
+
+# Backup hooks: The given commands are called for the `backup` command
+[backup.hooks]
+run-before = ["echo before"] # Default: []
+run-after = ["echo after"] # Run after if successful, default: []
+run-failed = ["echo failed"] # Default: []
+run-finally = ["echo finally"] # Always run after, default: []
+
+[backup.metrics-labels]
+label-a = "xxx"
+
+# Backup options for specific sources - all above options are also available here and replace them for the given source
+[[backup.snapshots]]
+sources = [
+  "opendal:s3",
+] # Note: For opendal, currently only a single source is supported; see next [[backup.snapshots]] section for a local path example
+label = "label" # Default: not set
+# .. and so on. see [backup]
+
+# Additional backup source options - depending on source; currently only relevant for a "opendal:" source.
+# These can be only set in the config file.
+[backup.snapshots.options]
+connections = "20" # Default: Not set
+# Note that an opendal source use several service-dependent options which may be specified here, see
+# https://opendal.apache.org/docs/rust/opendal/services/index.html
+
+# Source-specific hooks: The given commands when backing up the defined source
+[backup.snapshots.hooks]
+run-before = ["echo before"] # Default: []
+run-after = ["echo after"] # Run after if successful, default: []
+run-failed = ["echo failed"] # Default: []
+run-finally = ["echo finally"] # Always run after, default: []
+
+[backup.snapshots.metrics-labels]
+label-a = "xxx"
+
+[[backup.snapshots]]
+sources = [
+  "/path/to/source2",
+  "/second/path",
+] # multiple local paths are given as array
+# ...
+
+# forget options
+[forget]
+prune = false
+group-by = "host,label,paths" # Can be any combination of host,label,paths,tags
+# The following filter options can be also defined here and then overwrite the options for the forget command
+filter-hosts = ["host1", "host2"] # Default: []
+filter-labels = ["label1", "label2"] # Default: []
+filter-tags = ["tag1,tag2", "tag3"] # Default: []
+filter-tags-exact = ["tag1,tag2", "tag2"] # Default: []
+filter-paths = ["path1", "path2,path3"] # Default: []
+filter-paths-exact = ["path1", "path2,path3"] # Default: []
+filter-after = "2024-01-01" # Default: not set
+filter-before = "2024-02-05 12:15" # Default: not set
+filter-size = "200MiB" # Default: not set
+filter-size-added = "1 MB..10MB" # Default: not set
+filter-jq = '.description | contains ("test")' # Default: no jq filter function
+filter-last = "5" # Default: not set
+# The retention options follow. All of these are not set by default.
+keep-tags = ["tag1", "tag2,tag3"] # Default: not set
+keep-ids = [
+  "123abc",
+  "11122233",
+] # Keep all snapshots whose ID starts with any of these strings, default: not set
+keep-last = 0
+keep-minutely = 10
+keep-hourly = 5
+keep-daily = 3
+keep-weekly = 0
+keep-monthly = 0
+keep-quarter-yearly = 0
+keep-half-yearly = 0
+keep-yearly = 10
+keep-within = "0s"
+keep-within-minutely = "2 hours"
+keep-within-hourly = "3 days"
+keep-within-daily = "0 seconds"
+keep-within-weekly = "2 months"
+keep-within-monthly = "1 year"
+keep-within-quarter-yearly = "0 year"
+keep-within-half-yearly = "1 year"
+keep-within-yearly = "10 years"
+delete-unchanged = false
+
+[copy]
+targets = ["profile1", "profile2"] # Default: []
+
+[webdav]
+address = "localhost:8000"
+path-template = "[{hostname}]/[{label}]/{time}" # The path template to use for snapshots. {id}, {id_long}, {time}, {username}, {hostname}, {label}, {tags}, {backup_start}, {backup_end} are replaced. [default: "[{hostname}]/[{label}]/{time}"]. Only relevant if no snapshot-path is given.
+time-template = "%Y-%m-%d_%H-%M-%S" # only relevant if no snapshot-path is given
+symlinks = false
+file-access = "read" # Default: "forbidden" for hot/cold repos, else "read"
+snapshot-path = "latest:/dir" # Default: not set - if not set, generate a virtual tree with all snapshots using path-template
+
+[mount]
+path-template = "[{hostname}]/[{label}]/{time}" # The path template to use for snapshots. {id}, {id_long}, {time}, {username}, {hostname}, {label}, {tags}, {backup_start}, {backup_end} are replaced. [default: "[{hostname}]/[{label}]/{time}"]. Only relevant if no snapshot-path is given.
+time-template = "%Y-%m-%d_%H-%M-%S" # only relevant if no snapshot-path is given
+exclusive = true # don't allow other users to access the mount point
+file-access = "read" # Default: "forbidden" for hot/cold repos, else "read"
+mount-point = "~/mnt"
+snapshot-path = "latest:/dir" # Default: not set - if not set, generate a virtual tree with all snapshots using path-template
+options = [
+  "kernel_cache", # Default: ["kernel_cache]
+]

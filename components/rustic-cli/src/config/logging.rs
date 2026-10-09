@@ -1,0 +1,143 @@
+use std::{path::PathBuf, sync::OnceLock};
+
+use anyhow::Result;
+use clap::{Parser, ValueHint};
+use conflate::Merge;
+use log::LevelFilter;
+use log4rs::{
+    Handle,
+    append::{
+        console::{ConsoleAppender, Target},
+        file::FileAppender,
+    },
+    config::{Appender, Config, Logger, Root},
+    encode::pattern::PatternEncoder,
+    filter::threshold::ThresholdFilter,
+};
+use serde::{Deserialize, Serialize};
+use serde_with::{DisplayFromStr, serde_as};
+
+use crate::config::progress_options::multi_progress;
+
+/// Logging Config
+#[serde_as]
+#[derive(Default, Debug, Parser, Clone, Deserialize, Serialize, Merge)]
+#[serde(default, rename_all = "kebab-case", deny_unknown_fields)]
+pub struct LoggingOptions {
+    /// Use this log level [default: info]
+    #[clap(long, global = true, env = "RUSTIC_LOG_LEVEL",
+        value_parser(["off", "error", "warn", "info", "debug", "trace"]))]
+    #[serde_as(as = "Option<DisplayFromStr>")]
+    #[merge(strategy=conflate::option::overwrite_none)]
+    pub log_level: Option<String>,
+
+    /// Use this log level for the log file [default: info]
+    #[clap(long, global = true, env = "RUSTIC_LOG_LEVEL_LOGFILE",
+        value_parser(["off", "error", "warn", "info", "debug", "trace"]))]
+    #[merge(strategy=conflate::option::overwrite_none)]
+    pub log_level_logfile: Option<String>,
+
+    /// Use this log level in dry-run mode [default: info]
+    #[clap(long, global = true, env = "RUSTIC_LOG_LEVEL_DRYRUN",
+        value_parser(["off", "error", "warn", "info", "debug", "trace"]))]
+    #[merge(strategy=conflate::option::overwrite_none)]
+    pub log_level_dryrun: Option<String>,
+
+    /// Use this log level for dependencies [default: warn]
+    #[clap(long, global = true, env = "RUSTIC_LOG_LEVEL_DEPENDENCIES",
+        value_parser(["off", "error", "warn", "info", "debug", "trace"]))]
+    #[merge(strategy=conflate::option::overwrite_none)]
+    pub log_level_dependencies: Option<String>,
+
+    /// Write log messages to the given file (using log-level-logfile)
+    #[clap(long, global = true, env = "RUSTIC_LOG_FILE", value_name = "LOGFILE", value_hint = ValueHint::FilePath)]
+    #[merge(strategy=conflate::option::overwrite_none)]
+    pub log_file: Option<PathBuf>,
+}
+
+impl LoggingOptions {
+    pub fn config(&self, dry_run: bool) -> Result<Config> {
+        let log_level = if dry_run {
+            &self.log_level_dryrun
+        } else {
+            &self.log_level
+        };
+
+        let level_filter = log_level
+            .as_ref()
+            .map_or(LevelFilter::Info, |l| l.parse().unwrap());
+        let level_filter_logfile = self
+            .log_level_logfile
+            .as_ref()
+            .map_or(LevelFilter::Info, |l| l.parse().unwrap());
+        let level_filter_dependencies = self
+            .log_level_dependencies
+            .as_ref()
+            .map_or(LevelFilter::Warn, |l| l.parse().unwrap());
+
+        let stdout = ConsoleAppender::builder()
+            .target(Target::Stderr)
+            .encoder(Box::new(PatternEncoder::new("{h([{l}])} {m}{n}")))
+            .build();
+        let stdout = PbPauseAppender(stdout);
+
+        let mut root_builder = Root::builder().appender("stdout");
+        let mut config_builder = Config::builder().appender(
+            Appender::builder()
+                .filter(Box::new(ThresholdFilter::new(level_filter)))
+                .build("stdout", Box::new(stdout)),
+        );
+
+        if let Some(file) = &self.log_file {
+            let file_appender = FileAppender::builder()
+                .encoder(Box::new(PatternEncoder::new("{d} [{l}] - {m}{n}")))
+                .build(file)?;
+            root_builder = root_builder.appender("logfile");
+            config_builder = config_builder.appender(
+                Appender::builder()
+                    .filter(Box::new(ThresholdFilter::new(level_filter_logfile)))
+                    .build("logfile", Box::new(file_appender)),
+            );
+        }
+
+        let root = root_builder.build(level_filter_dependencies);
+        let config = config_builder
+            .logger(Logger::builder().build("rustic_rs", LevelFilter::Trace))
+            .logger(Logger::builder().build("rustic_core", LevelFilter::Trace))
+            .logger(Logger::builder().build("rustic_backend", LevelFilter::Trace))
+            .build(root)?;
+        Ok(config)
+    }
+
+    pub fn start_logger(&self, dry_run: bool) -> Result<()> {
+        static HANDLE: OnceLock<Handle> = OnceLock::new();
+
+        let config = self.config(dry_run)?;
+        if let Some(handle) = HANDLE.get() {
+            handle.set_config(config);
+        } else {
+            let handle = log4rs::init_config(config)?;
+            _ = HANDLE.set(handle);
+        }
+        Ok(())
+    }
+}
+
+/// A wrapper around [`ConsoleAppender`] that suspends the progress bar when writing logs.
+#[derive(Debug)]
+struct PbPauseAppender(ConsoleAppender);
+
+impl log4rs::append::Append for PbPauseAppender {
+    fn append(&self, record: &log::Record<'_>) -> Result<()> {
+        multi_progress().suspend(|| self.0.append(record))
+    }
+
+    fn flush(&self) {
+        // as of log4rs 1.4.0, <ConsoleAppender as Append>::flush does nothing,
+        // so we do not need to pause the progress bar here. In the future,
+        // if log4rs changes this behavior, we might need to add a suspend here.
+        // But that's not necessary right now, so we just call flush directly
+        // to avoid unnecessary suspends.
+        self.0.flush();
+    }
+}

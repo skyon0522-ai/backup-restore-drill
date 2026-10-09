@@ -1,0 +1,340 @@
+//! `ls` subcommand
+
+use std::{
+    ops::AddAssign,
+    path::{Path, PathBuf},
+};
+
+#[cfg(feature = "tui")]
+use crate::commands::tui;
+use crate::{
+    Application, RUSTIC_APP, commands::diff::arg_to_snap_path, repository::IndexedRepo, status_err,
+};
+
+use abscissa_core::{Command, Runnable, Shutdown};
+use anyhow::Result;
+
+use derive_more::Add;
+use rustic_core::{
+    Excludes, LocalSource, LocalSourceFilterOptions, LocalSourceSaveOptions, LsOptions,
+    ProgressType, ReadSource, ReadSourceEntry, RusticResult,
+    repofile::{Node, NodeType},
+};
+
+mod constants {
+    // constants from man page inode(7)
+    pub(super) const S_IRUSR: u32 = 0o400; //   owner has read permission
+    pub(super) const S_IWUSR: u32 = 0o200; //   owner has write permission
+    pub(super) const S_IXUSR: u32 = 0o100; //   owner has execute permission
+
+    pub(super) const S_IRGRP: u32 = 0o040; //   group has read permission
+    pub(super) const S_IWGRP: u32 = 0o020; //   group has write permission
+    pub(super) const S_IXGRP: u32 = 0o010; //   group has execute permission
+
+    pub(super) const S_IROTH: u32 = 0o004; //   others have read permission
+    pub(super) const S_IWOTH: u32 = 0o002; //   others have write permission
+    pub(super) const S_IXOTH: u32 = 0o001; //   others have execute permission
+}
+use constants::{S_IRGRP, S_IROTH, S_IRUSR, S_IWGRP, S_IWOTH, S_IWUSR, S_IXGRP, S_IXOTH, S_IXUSR};
+
+/// `ls` subcommand
+#[derive(clap::Parser, Command, Debug, Default)]
+pub(crate) struct LsCmd {
+    /// Snapshot:path to list (uses local path if no snapshot is given)
+    ///
+    /// The snapshot can be an id: "01a2b3c4" or "latest" or "latest~N" (N >= 0)
+    #[clap(value_name = "SNAPSHOT[:PATH]|PATH")]
+    pub snap: String,
+
+    /// show summary
+    #[clap(long, short = 's', conflicts_with = "json")]
+    pub summary: bool,
+
+    /// show long listing
+    #[clap(long, short = 'l', conflicts_with = "json")]
+    pub long: bool,
+
+    /// show listing in json
+    #[clap(long, conflicts_with_all = ["summary", "long"])]
+    pub json: bool,
+
+    /// show uid/gid instead of user/group
+    #[clap(long, long("numeric-uid-gid"))]
+    pub numeric_id: bool,
+
+    /// recursively list the dir
+    #[clap(long)]
+    pub recursive: bool,
+
+    #[cfg(feature = "tui")]
+    /// Run in interactive UI mode
+    #[clap(long, short)]
+    pub interactive: bool,
+
+    #[clap(flatten, next_help_heading = "Exclude options")]
+    /// exclude options
+    pub excludes: Excludes,
+
+    #[clap(flatten, next_help_heading = "Exclude options for local source")]
+    pub ignore_opts: LocalSourceFilterOptions,
+}
+
+impl Runnable for LsCmd {
+    fn run(&self) {
+        let (snap_id, path) = arg_to_snap_path(&self.snap);
+
+        if let Err(err) = snap_id.map_or_else(
+            || self.inner_run_local(path),
+            |snap_id| {
+                RUSTIC_APP
+                    .config()
+                    .repository
+                    .run_indexed(|repo| self.inner_run_snapshot(repo, snap_id, path))
+            },
+        ) {
+            status_err!("{}", err);
+            RUSTIC_APP.shutdown(Shutdown::Crash);
+        };
+    }
+}
+
+/// Summary of a ls command
+///
+/// This struct is used to print a summary of the ls command.
+//
+// TODO: The same is defined in core - consolidate!
+#[derive(Default, Clone, Copy, Add)]
+pub struct Summary {
+    pub files: usize,
+    pub size: u64,
+    pub dirs: usize,
+}
+
+impl AddAssign for Summary {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs;
+    }
+}
+
+impl Summary {
+    /// Update the summary with the node
+    ///
+    /// # Arguments
+    ///
+    /// * `node` - the node to update the summary with
+    pub fn update(&mut self, node: &Node) {
+        if node.is_dir() {
+            self.dirs += 1;
+        } else {
+            self.files += 1;
+        }
+
+        if node.is_file() {
+            self.size += node.meta.size;
+        }
+    }
+
+    pub fn from_node(node: &Node) -> Self {
+        let mut summary = Self::default();
+        summary.update(node);
+        summary
+    }
+}
+
+pub trait NodeLs {
+    fn mode_str(&self) -> String;
+    fn link_str(&self) -> String;
+}
+
+impl NodeLs for Node {
+    fn mode_str(&self) -> String {
+        format!(
+            "{:>1}{:>9}",
+            match self.node_type {
+                NodeType::Dir => 'd',
+                NodeType::Symlink { .. } => 'l',
+                NodeType::Chardev { .. } => 'c',
+                NodeType::Dev { .. } => 'b',
+                NodeType::Fifo => 'p',
+                NodeType::Socket => 's',
+                _ => '-',
+            },
+            self.meta
+                .mode
+                .map_or_else(|| "?????????".to_string(), parse_permissions)
+        )
+    }
+    fn link_str(&self) -> String {
+        if let NodeType::Symlink { .. } = &self.node_type {
+            ["->", &self.node_type.to_link().to_string_lossy()].join(" ")
+        } else {
+            String::new()
+        }
+    }
+}
+
+impl LsCmd {
+    fn inner_run_snapshot(
+        &self,
+        repo: IndexedRepo,
+        snap_id: &str,
+        path: Option<&str>,
+    ) -> Result<()> {
+        let config = RUSTIC_APP.config();
+
+        let path = path.unwrap_or("");
+        let snap = repo.get_snapshot_from_str(snap_id, |sn| config.snapshot_filter.matches(sn))?;
+
+        #[cfg(feature = "tui")]
+        if self.interactive {
+            use rustic_core::ProgressBars;
+            use tui::summary::SummaryMap;
+
+            return tui::run(|progress| {
+                let p = progress.progress(
+                    ProgressType::Spinner,
+                    "starting rustic in interactive mode...",
+                );
+                p.finish();
+                // create app and run it
+                let ls = tui::Ls::new(&repo, snap, path, SummaryMap::default())?;
+                tui::run_app(progress.terminal, ls)
+            });
+        }
+        let node = repo.node_from_snapshot_and_path(&snap, path)?;
+
+        // recursive is standard if we specify a snapshot without dirs. In other cases, use the parameter `recursive`
+        let ls_opts = LsOptions::default()
+            .excludes(self.excludes.clone())
+            .recursive(!self.snap.contains(':') || self.recursive);
+
+        self.display(repo.ls(&node, &ls_opts)?)?;
+        Ok(())
+    }
+
+    pub fn inner_run_local(&self, path: Option<&str>) -> Result<()> {
+        #[cfg(feature = "tui")]
+        if self.interactive {
+            anyhow::bail!("interactive ls with local path is not yet implemented!");
+        }
+        let path = path.unwrap_or(".");
+        let src = LocalSource::new(
+            LocalSourceSaveOptions::default(),
+            &self.excludes,
+            &self.ignore_opts,
+            &[&path],
+        )?
+        .entries()
+        .map(|item| -> RusticResult<_> {
+            let ReadSourceEntry { path, node, .. } = item?;
+            Ok((path, node))
+        });
+        self.display(src)?;
+        Ok(())
+    }
+
+    pub fn display(
+        &self,
+        tree_streamer: impl Iterator<Item = RusticResult<(PathBuf, Node)>>,
+    ) -> Result<()> {
+        let mut summary = Summary::default();
+
+        if self.json {
+            print!("[");
+        }
+
+        let mut first_item = true;
+        for item in tree_streamer {
+            let (path, node) = item?;
+            summary.update(&node);
+            if self.json {
+                if !first_item {
+                    print!(",");
+                }
+                print!("{}", serde_json::to_string(&path)?);
+            } else if self.long {
+                print_node(&node, &path, self.numeric_id);
+            } else {
+                println!("{}", path.display());
+            }
+            first_item = false;
+        }
+
+        if self.json {
+            println!("]");
+        }
+
+        if self.summary {
+            println!(
+                "total: {} dirs, {} files, {} bytes",
+                summary.dirs, summary.files, summary.size
+            );
+        }
+        Ok(())
+    }
+}
+
+/// Print node in format similar to unix `ls`
+///
+/// # Arguments
+///
+/// * `node` - the node to print
+/// * `path` - the path of the node
+pub fn print_node(node: &Node, path: &Path, numeric_uid_gid: bool) {
+    println!(
+        "{:>10} {:>8} {:>8} {:>9} {:>17} {path:?} {}",
+        node.mode_str(),
+        if numeric_uid_gid {
+            node.meta.uid.map(|uid| uid.to_string())
+        } else {
+            node.meta.user.clone()
+        }
+        .unwrap_or_else(|| "?".to_string()),
+        if numeric_uid_gid {
+            node.meta.gid.map(|uid| uid.to_string())
+        } else {
+            node.meta.group.clone()
+        }
+        .unwrap_or_else(|| "?".to_string()),
+        node.meta.size,
+        node.meta.mtime.map_or_else(
+            || "?".to_string(),
+            |t| t.strftime("%_d %b %Y %H:%M").to_string()
+        ),
+        node.link_str(),
+    );
+}
+
+/// Convert permissions into readable format
+fn parse_permissions(mode: u32) -> String {
+    let user = triplet(mode, S_IRUSR, S_IWUSR, S_IXUSR);
+    let group = triplet(mode, S_IRGRP, S_IWGRP, S_IXGRP);
+    let other = triplet(mode, S_IROTH, S_IWOTH, S_IXOTH);
+    [user, group, other].join("")
+}
+
+/// Create a triplet of permissions
+///
+/// # Arguments
+///
+/// * `mode` - the mode to convert
+/// * `read` - the read bit
+/// * `write` - the write bit
+/// * `execute` - the execute bit
+///
+/// # Returns
+///
+/// The triplet of permissions as a string
+fn triplet(mode: u32, read: u32, write: u32, execute: u32) -> String {
+    match (mode & read, mode & write, mode & execute) {
+        (0, 0, 0) => "---",
+        (_, 0, 0) => "r--",
+        (0, _, 0) => "-w-",
+        (0, 0, _) => "--x",
+        (_, 0, _) => "r-x",
+        (_, _, 0) => "rw-",
+        (0, _, _) => "-wx",
+        (_, _, _) => "rwx",
+    }
+    .to_string()
+}

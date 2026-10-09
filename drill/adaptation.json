@@ -1,0 +1,34 @@
+{
+  "format": "rustic-drill-adaptation-v1",
+  "original_test": "original/backup_restore.rs",
+  "source_commit": "143d073f6039fcf29b64191ceb36c926744b6fe4",
+  "unchanged_original_files": 4,
+  "entries": [
+    {
+      "path": "Cargo.toml",
+      "bytes": 205,
+      "sha256": "81e14743016214c38259debe8494c50fddb2583743feb1864cad0ffb32364020"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 7310,
+      "sha256": "8de646835f79f31bb4c160c683a042e7150467ae848b95fe9e58ffb044142509"
+    },
+    {
+      "path": "src/main.rs",
+      "bytes": 11861,
+      "sha256": "4c901e2d2e13f6c4b9badac66f399701150ea41134290bd1f021b981dcf08e4b"
+    },
+    {
+      "path": "ORIGINAL_TO_ADAPTED.patch",
+      "bytes": 18905,
+      "sha256": "bcd1a1388a3c6593a308ea09ceb8ffdf97431d36b6186b6749b7a835e249aaf6"
+    }
+  ],
+  "adaptation": "Copied upstream subprocess tests adapted to synthetic files, a selected full snapshot ID, isolated output and retained hash/byte comparisons.",
+  "resolved_findings": [
+    "RUSTIC-01",
+    "RUSTIC-02"
+  ],
+  "retained_limit": "RUSTIC-03: regular files and directories only; no metadata, symlink or special-file fidelity claim."
+}

@@ -1,0 +1,13 @@
+/target
+**/*.rs.bk
+.vscode
+mutants.out
+cargo-test*
+coverage/*lcov
+.testscompletions-*
+.DS_Store
+
+# Ignore generated test files
+/tests/generated/*.toml
+/tests/generated/*.log
+/tests/generated/test-restore

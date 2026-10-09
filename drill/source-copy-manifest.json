@@ -1,0 +1,26 @@
+{
+  "upstream": "https://github.com/rustic-rs/rustic.git",
+  "commit": "143d073f6039fcf29b64191ceb36c926744b6fe4",
+  "copied_files": [
+    {
+      "path": "original/backup_restore.rs",
+      "bytes": 5953,
+      "sha256": "77b9d9d857d7a0508acf8f1b837bb7fe8df7b056307623a9ff61a8dbf57e2c94"
+    },
+    {
+      "path": "original/LICENSE-APACHE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "original/LICENSE-MIT",
+      "bytes": 1082,
+      "sha256": "18c5d5d24502c109cd5f1399a71f5513465020092255a6489f87853e4c6820fb"
+    },
+    {
+      "path": "original/repositories.rs",
+      "bytes": 4658,
+      "sha256": "c6e0acff4449058be181c389757d4df82a6b238c8ab8de5f791a93e06cdd51da"
+    }
+  ]
+}

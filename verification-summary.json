@@ -1,0 +1,310 @@
+{
+  "format": "rustic-portable-verification-summary-v1",
+  "date": "2026-10-09",
+  "toolchain": {
+    "rustc": "1.99.0 (b940084d7 2026-09-28)",
+    "cargo": "1.99.0 (5f94df478 2026-08-27)",
+    "python": "Python 3.12.3",
+    "platform": "Ubuntu 24.04, x86_64-unknown-linux-gnu"
+  },
+  "sources": [
+    {
+      "name": "rustic-cli",
+      "repository": "https://github.com/rustic-rs/rustic.git",
+      "commit": "143d073f6039fcf29b64191ceb36c926744b6fe4",
+      "unchanged_files": 195
+    },
+    {
+      "name": "rustic-core-workspace",
+      "repository": "https://github.com/rustic-rs/rustic_core.git",
+      "commit": "6fa7b56ebc750c6af0e6bc6bbe90c1781b60a38d",
+      "unchanged_files": 331
+    }
+  ],
+  "source_integrity": {
+    "component_files": 526,
+    "byte_lengths_sha256_git_blob_sha1": "matched",
+    "app_files": 195,
+    "app_unchanged_files": 193,
+    "app_changed_paths": [
+      "Cargo.lock",
+      "Cargo.toml"
+    ],
+    "unchanged_original_test_and_license_files": 4,
+    "retained_registry_packages_versions_checksums": 755
+  },
+  "historical_original_duplicate_composition": {
+    "separate_cli_targets": true,
+    "contracts": [
+      {
+        "stage": "upstream",
+        "command": "cargo test --locked --no-default-features --test backup_restore test_backup_and_restore_passes",
+        "exit_code": 0,
+        "receipt_sha256": "c62dde6174c0dbefe0c981620c38ba9a32b5ee0043c5d6d86e4cb52c38c432fb",
+        "log_sha256": "de8bb249d21fa94246e71b665f7a4478d8f1abbfc3f35c56c3d104e22d7fc6ea"
+      },
+      {
+        "stage": "upstream",
+        "command": "cargo test --locked --no-default-features --test backup_restore test_backup_and_check_passes",
+        "exit_code": 0,
+        "receipt_sha256": "4b5649b223912c1b9b13cc4f005fd6c60ea08b88120a6ae891ed502575ecfa14",
+        "log_sha256": "0bb1990484387cc4fb0351efa45312b3f955f50dd42e36466910403066faafbc"
+      },
+      {
+        "stage": "component",
+        "command": "cargo test --locked --no-default-features --test backup_restore test_backup_and_restore_passes",
+        "exit_code": 0,
+        "receipt_sha256": "ea4d2ab1728eb29d57d460d925bcb826aa018352a1ef19f9934f86f11405633d",
+        "log_sha256": "28273d85d744a4c64794aa64cd5986b99aca9362c437811273f66d8921cd99c2"
+      },
+      {
+        "stage": "component",
+        "command": "cargo test --locked --no-default-features --test backup_restore test_backup_and_check_passes",
+        "exit_code": 0,
+        "receipt_sha256": "237c3809d2d6bf5a48db4686ca5e44f2ecb373d8974f1cc9ee71a86edc62b8ac",
+        "log_sha256": "972c9f0353e5ec6c099659ac6df8db19d77545b5e06fb7d92c357544812ff290"
+      },
+      {
+        "stage": "app",
+        "command": "cargo test --locked --no-default-features --test backup_restore test_backup_and_restore_passes",
+        "exit_code": 0,
+        "receipt_sha256": "038eef0c6cc34a900b5d05836d45157c1575b67e971744b0b6ad52716c1bd1da",
+        "log_sha256": "8658e100c381be8ab8a0c5214046e68324e01a5c130a81ffe9da9aa115acc6e3"
+      },
+      {
+        "stage": "app",
+        "command": "cargo test --locked --no-default-features --test backup_restore test_backup_and_check_passes",
+        "exit_code": 0,
+        "receipt_sha256": "234a6da1452cdd6cb8ca12843c2329022d57d782980655117a886d8334619bdd",
+        "log_sha256": "1ae68cd5f914122f0bb356ee6d40860c23a5e541d6b6e06cecdc56ec9d0d9c3e"
+      }
+    ],
+    "composed_cli_version": "rustic 0.11.4",
+    "composed_cli_sha256": "e1770047a1af7e3d591eaa552c54f019a93e40d5a70c806e29695f0acb3c7fee"
+  },
+  "independent_review": {
+    "initial_verdict": "PASS_WITH_NONBLOCKING_PROOF_GAPS",
+    "resolved": [
+      "RUSTIC-01",
+      "RUSTIC-02"
+    ],
+    "retained": "RUSTIC-03: synthetic regular files/directories only; metadata, symlinks and special files unverified"
+  },
+  "staged_reproduction": {
+    "status": "passed",
+    "started_utc": "2026-10-09T12:21:33.566265+00:00",
+    "finished_utc": "2026-10-09T12:27:29.953218+00:00",
+    "existing_cargo_registry_cache_reused": true,
+    "existing_cli_build_target_reused": true,
+    "pre_reuse_source_proof": {
+      "app_files": 195,
+      "all_app_bytes_match": true,
+      "drill_adaptation_paths_match": [
+        "Cargo.toml",
+        "Cargo.lock",
+        "src/main.rs",
+        "ORIGINAL_TO_ADAPTED.patch"
+      ],
+      "component_pinned_manifest_check": "passed"
+    },
+    "fresh_cli_target_tested": false,
+    "fresh_dependency_download_tested": false,
+    "drill_target": "new external build target",
+    "output": "new synthetic workspace under an existing output parent",
+    "cargo_net_offline": true,
+    "staged_cli_version": "rustic 0.11.4",
+    "staged_cli_sha256": "fe57e4df945267daff71c9253dbb1b5dd102e67b16c45d80ceb824ce5e31bd66",
+    "drill_sha256": "8e50a74bda250690c0ad8a3b0a90ce7309820e3f4144f32fdce987ab8e9af3ad",
+    "compiled_from_staged_manifest": true,
+    "steps": [
+      {
+        "label": "rustc-version",
+        "exit_code": 0,
+        "elapsed_seconds": 0.178,
+        "stdout_sha256": "b569b0c98ea3133c7252b4b8ea6b39b7b353813df0dd5f5c412c355691424112",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "cargo-version",
+        "exit_code": 0,
+        "elapsed_seconds": 0.052,
+        "stdout_sha256": "1f88eaf7fe1aaec83184752cf4c944cd22f00184136ff36a3e4c318cc60ef566",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "source-check-before",
+        "exit_code": 0,
+        "elapsed_seconds": 9.536,
+        "stdout_sha256": "a7c9b8be8a89a943cdb14d9cee071c00ce9e0507bc00b03e3aa9b25793ba8d13",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "create-output-parent",
+        "exit_code": 0,
+        "elapsed_seconds": 0.012,
+        "stdout_sha256": "9ba6b849da4e4cdd68cbeb6dedb63368b08b3e7958b042c0cd7e02722e40d20d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "create-existing-receipt-parent",
+        "exit_code": 0,
+        "elapsed_seconds": 0.012,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "build-staged-cli",
+        "exit_code": 0,
+        "elapsed_seconds": 87.263,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "0852e91e78dde4b4add8ce09bc9d4d1391a6698b3b8890920b88dd3552ce9014"
+      },
+      {
+        "label": "test-staged-drill",
+        "exit_code": 0,
+        "elapsed_seconds": 4.258,
+        "stdout_sha256": "17203d5e81ed40e4aace38d0c8830200a9a178ede1cabac9e00689d0dc269cdb",
+        "stderr_sha256": "11f1f562e7d12cd3e420c9136935e7d05b1368c3b3d924e0ba584614e6070dd1"
+      },
+      {
+        "label": "build-staged-drill",
+        "exit_code": 0,
+        "elapsed_seconds": 0.662,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "3c12c652dc1fb765c9826f5eb15666a07b42364aa8930b9e10c4f6bff791830e"
+      },
+      {
+        "label": "staged-cli-version",
+        "exit_code": 0,
+        "elapsed_seconds": 0.02,
+        "stdout_sha256": "e13fb8b3e4c2e513482363d9033221366df92c4d2989f27e1b04339b098335cd",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "execute-staged-drill",
+        "exit_code": 0,
+        "elapsed_seconds": 11.581,
+        "stdout_sha256": "42d1c4f1d64a9b5b6c60a465c0a07fd2f2d99702692c9434e1456d35c195f869",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "read-result-command",
+        "exit_code": 0,
+        "elapsed_seconds": 0.043,
+        "stdout_sha256": "e0112806bacf8b6e07476b66356d7d9680750be7feb4a4d765d583df98fc4a43",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "source-check-after",
+        "exit_code": 0,
+        "elapsed_seconds": 9.311,
+        "stdout_sha256": "a7c9b8be8a89a943cdb14d9cee071c00ce9e0507bc00b03e3aa9b25793ba8d13",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "build-drill-for-persistent-retention",
+        "exit_code": 0,
+        "elapsed_seconds": 6.957,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "3b43bdb7176d7a4bc05a8148b314f0486a3fc3409e1a9c6d422a90264ab04b42"
+      },
+      {
+        "label": "execute-persistent-staged-drill",
+        "exit_code": 0,
+        "elapsed_seconds": 15.825,
+        "stdout_sha256": "4575fec8ff2580dd9d6673ecaba41f54764015180c7edd709da20fd8bfce168f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "unit_tests": {
+      "passed": 4,
+      "failed": 0
+    },
+    "result": {
+      "cli_sha256": "fe57e4df945267daff71c9253dbb1b5dd102e67b16c45d80ceb824ce5e31bd66",
+      "digest_manifest_match": true,
+      "literal_bytes_match": true,
+      "manifest": [
+        {
+          "path": "binary.bin",
+          "sha256": "a10b222a5dfa115cb2b1a2e3eb885400cf70b53dcf05dec9c6c55dc25d238714",
+          "size": 6,
+          "type": "file"
+        },
+        {
+          "path": "copy-a.txt",
+          "sha256": "58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb",
+          "size": 10,
+          "type": "file"
+        },
+        {
+          "path": "empty.dat",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0,
+          "type": "file"
+        },
+        {
+          "path": "nested",
+          "type": "directory"
+        },
+        {
+          "path": "nested/copy-b.txt",
+          "sha256": "58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb",
+          "size": 10,
+          "type": "file"
+        },
+        {
+          "path": "nested/日本語.txt",
+          "sha256": "e1ef69691bf0e0e47e167c7748335b879971191c5741f1c4faa213a3d1124520",
+          "size": 16,
+          "type": "file"
+        },
+        {
+          "path": "nested/空のフォルダ",
+          "type": "directory"
+        }
+      ],
+      "read_data_check": "passed",
+      "repeat_data_added": 0,
+      "repeat_data_added_files": 0,
+      "repeat_data_added_packed": 0,
+      "restored_snapshot_id": "8b2d39ffbd53da37515967b893f98c39f4c0968df7cdeceb2a2ecd36f87074bc",
+      "second_snapshot_id": "6ace59a4887ed05b5421d64bb144b7abf58f91380e7f757e140dc5050273ee78",
+      "status": "passed",
+      "wrong_password_rejected": true
+    },
+    "receipt_retention": "After the initial /tmp output became unavailable in a later WSL invocation, only the identical staged drill was repeated into persistent task-local output. Its full command logs and manifests are retained outside the stage.",
+    "retained_drill_binary_sha256": "8e50a74bda250690c0ad8a3b0a90ce7309820e3f4144f32fdce987ab8e9af3ad",
+    "default_build_tool_observation": {
+      "python3": true,
+      "gcc": true,
+      "make": true,
+      "perl": true,
+      "cmake": false,
+      "pkg-config": false
+    },
+    "native_prerequisite_limit": "Reused target artifacts; this run does not establish minimum prerequisites for a clean native build."
+  },
+  "source_hashes": {
+    "source-manifest.json": "27a2f315ea9bb7bb1ff6f601c50468c5fe8c5ade2d091829f61ac99c02bd2a1e",
+    "app-source-manifest.json": "e11fc9265b8775ea11a1e73f2539744cc90dcc89452ed7ef7a19b15a68204385",
+    "composition.diff": "8d2c284bf046985d6c9baf9460e798bfef21064fcaca4877e2babda8b292fba1",
+    "drill/src/main.rs": "4c901e2d2e13f6c4b9badac66f399701150ea41134290bd1f021b981dcf08e4b",
+    "drill/Cargo.toml": "81e14743016214c38259debe8494c50fddb2583743feb1864cad0ffb32364020",
+    "drill/Cargo.lock": "8de646835f79f31bb4c160c683a042e7150467ae848b95fe9e58ffb044142509",
+    "drill/ORIGINAL_TO_ADAPTED.patch": "bcd1a1388a3c6593a308ea09ceb8ffdf97431d36b6186b6749b7a835e249aaf6"
+  },
+  "remote_ci_run": false,
+  "public_writes": [],
+  "provider_calls": [],
+  "not_established": [
+    "real user data recovery",
+    "metadata/symlink/special-file fidelity",
+    "cross-platform behavior",
+    "power-loss or interrupted-write safety",
+    "concurrent operations",
+    "cloud recovery",
+    "throughput or production readiness",
+    "fresh CLI target or dependency download"
+  ]
+}
