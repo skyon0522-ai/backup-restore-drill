@@ -6,12 +6,13 @@ Create an inspectable local recovery exercise before considering a backup workfl
 
 | Start here | Purpose |
 | --- | --- |
-| [drill/](drill/) | Executable recovery exercise adapted from upstream subprocess tests |
-| [app/](app/) | Copied CLI with local Cargo bindings |
+| [drill/src/main.rs](drill/src/main.rs) and [drill/](drill/) | Executable recovery exercise adapted from upstream subprocess tests |
+| [app/Cargo.toml](app/Cargo.toml) and [app/](app/) | Copied CLI with local Cargo bindings |
 | [components/rustic-cli/](components/rustic-cli/) and [components/rustic-core-workspace/](components/rustic-core-workspace/) | Unchanged CLI/core/backend source and original licenses |
 | [DESIGN.md](DESIGN.md) and [PROVENANCE.md](PROVENANCE.md) | Exercise design, reuse boundary and exact pinned revisions |
 | [VERIFICATION.md](VERIFICATION.md) and [verification-summary.json](verification-summary.json) | Observed checks, cache reuse and unverified conditions |
 | [composition.diff](composition.diff) and [source-manifest.json](source-manifest.json) | Local dependency binding changes and copied-source identities |
+| [tools/verify_source.py](tools/verify_source.py) | Read-only check of pinned component copies and adaptations |
 
 Copied upstream guides retain their original site/license-relative routes, including some links that do not resolve from their nested GitHub location. For complete upstream documentation, use the pinned [Rustic CLI repository](https://github.com/rustic-rs/rustic/tree/143d073f6039fcf29b64191ceb36c926744b6fe4) and [Rustic core repository](https://github.com/rustic-rs/rustic_core/tree/6fa7b56ebc750c6af0e6bc6bbe90c1781b60a38d). This root README is the entry point for the assembled drill, rather than the retained upstream app README.
 
