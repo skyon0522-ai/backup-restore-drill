@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "cli_sha256": "7ce71a46f8f5b830f3c5ff77ce4811babe9deea1a96cc45985e58881f2c7fba7",
+  "restored_snapshot_id": "c25d8da7f4c44534d72f73eab82547f3ac9a68c8827c29797c6742721883398c",
+  "second_snapshot_id": "963fa2d603e920ff0f93ad3135af4a9141c7e5d23e9d8561d09cb1485bc0bdde",
+  "repeat_data_added_files": 0,
+  "repeat_data_added": 0,
+  "repeat_data_added_packed": 0,
+  "read_data_check": "passed",
+  "wrong_password_rejected": true,
+  "digest_manifest_match": true,
+  "literal_bytes_match": true
+}

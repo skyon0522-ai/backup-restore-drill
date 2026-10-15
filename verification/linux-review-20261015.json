@@ -1,0 +1,109 @@
+{
+  "status": "PASS",
+  "observed_at_utc": "2026-10-15T04:28:34.663283+00:00",
+  "distribution": "Ubuntu 24.04.4 LTS",
+  "machine": "x86_64",
+  "python": "3.12.3",
+  "versions": {
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)"
+  },
+  "base_commit": "b4ca7bde9a016832cb7c6d17a79822b9ee12a5e3",
+  "initial_empty_cli_target": true,
+  "initial_cli_build_seconds": 661.3,
+  "registry_cache_reused_offline": true,
+  "fresh_dependency_acquisition": "UNRUN",
+  "later_entrypoint_reused_that_target": true,
+  "actual_cli_backup_check_restore": true,
+  "original_rust_tests": 4,
+  "new_python_tests": 15,
+  "final_python_tests_on_current_source": 15,
+  "cli_binary_unchanged_after_interface": true,
+  "cli_sha256": "7ce71a46f8f5b830f3c5ff77ce4811babe9deea1a96cc45985e58881f2c7fba7",
+  "source_check": {
+    "status": "passed",
+    "component_files": {
+      "rustic-cli": 195,
+      "rustic-core-workspace": 331
+    },
+    "app_files": 195,
+    "app_unchanged_files": 193,
+    "app_changed_files": [
+      "Cargo.lock",
+      "Cargo.toml"
+    ],
+    "copied_original_test_and_license_files": 4,
+    "drill_recorded_adaptation_files": 4,
+    "component_bytes_and_git_blob_identities": "matched",
+    "root_license_bytes": "matched"
+  },
+  "generated_regular_files": 5,
+  "directories": 2,
+  "file_bytes": 42,
+  "same_size_same_mtime_changed_byte_detected": true,
+  "original_result_bytes_retained": true,
+  "extra_restored_path_detected": true,
+  "altered_cases_are_inspection_copies_not_new_backup_images": true,
+  "presentation_only_changes_preserved_data_check_ast_and_json": true,
+  "browser": [
+    {
+      "status": "PASS",
+      "name": "matched",
+      "desktop1440": true,
+      "mobile390": true,
+      "current_checks_and_rows_match_json": true,
+      "recorded_success_separate_from_current_status": true,
+      "keyboard_table_scroll_and_disclosure": true,
+      "local_evidence_links": true,
+      "print_and_reduced_motion": true,
+      "active_injected_elements": 0,
+      "external_requests": [],
+      "page_errors": [],
+      "source": "One actual completed engine run"
+    },
+    {
+      "status": "PASS",
+      "name": "mismatch",
+      "desktop1440": true,
+      "mobile390": true,
+      "current_checks_and_rows_match_json": true,
+      "recorded_success_separate_from_current_status": true,
+      "keyboard_table_scroll_and_disclosure": true,
+      "local_evidence_links": true,
+      "print_and_reduced_motion": true,
+      "active_injected_elements": 0,
+      "external_requests": [],
+      "page_errors": [],
+      "source": "Changed inspection copy of that actual run; no additional backup or restore"
+    },
+    {
+      "status": "PASS",
+      "name": "extra-file",
+      "desktop1440": true,
+      "mobile390": true,
+      "current_checks_and_rows_match_json": true,
+      "recorded_success_separate_from_current_status": true,
+      "keyboard_table_scroll_and_disclosure": true,
+      "local_evidence_links": true,
+      "print_and_reduced_motion": true,
+      "active_injected_elements": 0,
+      "external_requests": [],
+      "page_errors": [],
+      "source": "Changed inspection copy of that actual run; no additional backup or restore"
+    }
+  ],
+  "current_source_sha256": {
+    "tools/run_drill.py": "2a111b8dcae2bec87a3f7060c783c44ab3280f47ae5fb404362cd18706b6b134",
+    "tools/review_run.py": "21c5c396f373eed301d31e2f1aae693dc4decc1cc6a027a933454c9c631ce583",
+    "tools/test_review_run.py": "fb2a2ee60c37bfe66d3a65c6b58d1a74701fc6a8006604906753e60b4ff2c679",
+    "tools/test_run_drill.py": "83f2fd68566f74d5c6dc49608e32cc0d884db2a590a78df6a3196d86d9950d4c"
+  },
+  "historical_remote_ci": {
+    "url": "https://github.com/skyon0522-ai/backup-restore-drill/actions/runs/38060129707",
+    "head": "b4ca7bde9a016832cb7c6d17a79822b9ee12a5e3",
+    "conclusion": "success"
+  },
+  "new_remote_ci_at_recording": "UNRUN",
+  "independent_review_at_recording": "UNRUN",
+  "publication_at_recording": "NOT_PERFORMED"
+}

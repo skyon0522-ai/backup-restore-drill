@@ -30,8 +30,54 @@ The four focused tests reject altered restore bytes, existing/overlapping destin
 
 Run the exact procedure in [README.md](README.md). `tools/verify_source.py` is read-only: it checks both complete component trees, the 195 app paths and exact two-file delta, unchanged copied original tests/licenses, recorded drill adaptation hashes, root license bytes, and byte-preserving `.gitattributes`. It derives from the already-used file-size/hash manifest comparison pattern, with Git blob checks for the Rustic entries.
 
-The staged reproduction status, build/cache handling, command results and synthetic acceptance fields are recorded in [verification-summary.json](verification-summary.json). Generated workspaces and full runtime receipts are kept outside the staged tree. The workflow in `.github/workflows/checks.yml` runs the same source check, locked builds, four drill tests, and synthetic exercise. Remote CI has not run.
+The staged reproduction status, build/cache handling, command results and synthetic acceptance fields are recorded in [verification-summary.json](verification-summary.json). Generated workspaces and full runtime receipts are kept outside the staged tree. The workflow in `.github/workflows/checks.yml` runs the same source check, locked builds, four drill tests, and synthetic exercise. That staging run did not verify remote CI; a later observed run is recorded below.
 
-The staged source check, CLI build, four focused tests, drill build, restore exercise, README result-reader, and final source check all passed. The run reused both the registry cache and an existing CLI build target after checking source identity; Cargo compiled from the staged app manifest. The drill used a new target. A focused second drill retained its full logs in persistent local output after the initial temporary workspace became unavailable in a later WSL invocation. A wholly fresh CLI target and dependency download remain untested.
+The staged source check, CLI build, four focused tests, drill build, restore exercise, README result-reader, and final source check all passed. The run reused both the registry cache and an existing CLI build target after checking source identity; Cargo compiled from the staged app manifest. The drill used a new target. A focused second drill retained its full logs in persistent local output after the initial temporary workspace became unavailable in a later WSL invocation. At that checkpoint a wholly fresh CLI target and dependency download remained untested.
 
 The checks establish only the demonstrated local synthetic behavior. They do not establish general backup fidelity, metadata/symlink/special-file handling, cross-platform behavior, real-user recovery, power-loss safety, concurrent operations, cloud recovery, throughput, or production readiness. No broader upstream suite was rerun for this staging step.
+
+
+## Linux entrypoint and current-file review: 2026-10-15
+
+The composed CLI built in an initially empty target on Ubuntu 24.04 with
+Rust/Cargo 1.99.0 and two jobs, taking 661.3 seconds. It reused the registry cache
+offline. This is not fresh dependency acquisition or a clean-OS build. Compiler
+warnings from unchanged pinned code remain; broader upstream tests and future
+toolchain compatibility were not established.
+
+The actual new entrypoint reused that target, passed four original Rust tests
+and 15 Python tests, ran the actual exercise and checked source identities
+before/after. All 526 component files, 195 app files with their existing two
+Cargo adaptations, copied original tests/licenses, drill source and lockfiles
+retain their prior identities. The CLI binary hash did not change after adding
+the Python interface.
+
+Five files, two directories and 42 file bytes matched. A separate inspection
+copy changed one restored byte without changing size or modification time:
+current digest/literal checks failed while historical result bytes stayed
+unchanged. Another inspection copy added an HTML-like filename: original file
+bytes still matched but the full restore tree failed. Neither copy is another
+backup image or another backup/restore execution. Final presentation corrections
+were checked separately; the data-check AST and five JSON files stayed unchanged.
+
+Three real report variants passed at widths 1440/390. Cards, table values and
+verdicts agreed with JSON. Keyboard scrolling/disclosure, evidence links,
+print-visible scope and reduced-motion checks passed. The extra name created no
+active HTML element; no external browser request/page error was observed.
+Desktop/mobile images were inspected. The reader rejects static symlinks/special
+files, malformed or traversing manifests and existing/overlapping output.
+It provides neither concurrent-read consistency nor record authentication.
+
+The prior generated-password description was incorrect. The unchanged drill
+uses a fixed public synthetic password; the README now states this. Six review
+files omit raw file contents, passwords, keys and machine-specific CLI paths.
+Full original data/logs remain in their separate workspace. See the
+[dated local receipt](verification/linux-review-20261015.json).
+
+[Historical remote run 38060129707](https://github.com/skyon0522-ai/backup-restore-drill/actions/runs/38060129707)
+succeeded at `b4ca7bde9a016832cb7c6d17a79822b9ee12a5e3` on 2026-10-10, for the
+old workflow. The updated workflow invokes the new Python entrypoint, pins
+third-party Actions and Rust 1.99.0/Python 3.12.3 on Ubuntu 24.04, uses only
+contents-read permissions without retained checkout credentials, and uploads
+only six review files for seven days. It uploads no backup data, password or
+command log. New-commit remote execution is separate from local evidence.

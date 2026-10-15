@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "mismatch",
+  "checks": {
+    "current_source_matches_saved": true,
+    "current_restore_matches_saved": false,
+    "current_literal_file_bytes_match": false
+  },
+  "recorded_drill_status": "passed",
+  "input_result_sha256": "2fa228fdc522cc0812d1514c5948353381b5cfaaca8684a9949e6d948ae7010f",
+  "input_saved_manifest_sha256": "ec169edc79f9aeea750a1a7445471462e5e961a7acde18d0ee4af22c4d390c00",
+  "expected_regular_files": 5,
+  "expected_directories": 2,
+  "expected_file_bytes": 42,
+  "changed_paths": [
+    "binary.bin"
+  ],
+  "scope": "Current generated source/restore paths, sizes, SHA-256 and literal file bytes only; editable local records are not authenticated."
+}

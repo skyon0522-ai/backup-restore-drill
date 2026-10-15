@@ -1,0 +1,40 @@
+[
+  {
+    "path": "binary.bin",
+    "sha256": "a10b222a5dfa115cb2b1a2e3eb885400cf70b53dcf05dec9c6c55dc25d238714",
+    "size": 6,
+    "type": "file"
+  },
+  {
+    "path": "copy-a.txt",
+    "sha256": "58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb",
+    "size": 10,
+    "type": "file"
+  },
+  {
+    "path": "empty.dat",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "type": "file"
+  },
+  {
+    "path": "nested",
+    "type": "directory"
+  },
+  {
+    "path": "nested/copy-b.txt",
+    "sha256": "58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb",
+    "size": 10,
+    "type": "file"
+  },
+  {
+    "path": "nested/日本語.txt",
+    "sha256": "e1ef69691bf0e0e47e167c7748335b879971191c5741f1c4faa213a3d1124520",
+    "size": 16,
+    "type": "file"
+  },
+  {
+    "path": "nested/空のフォルダ",
+    "type": "directory"
+  }
+]

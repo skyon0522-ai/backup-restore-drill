@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<title>Backup restore review</title><style>
+body{margin:0;font:16px/1.6 system-ui,sans-serif;background:#f4f7fb;color:#182736}
+main{max-width:78rem;margin:auto;padding:2rem 1rem}h1{line-height:1.2}p{max-width:78ch}
+.panel{padding:1.5rem;border:1px solid #d1dce8;border-radius:.6rem;background:white;margin:1rem 0;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid section{background:#eaf1f8;padding:1rem}
+.grid h2{font-size:1rem;margin:0 0 .5rem}.grid p{font-weight:600;margin:0}
+.scroll{overflow:auto}table{border-collapse:collapse;width:100%;min-width:68rem}th,td{text-align:left;padding:.7rem;border-bottom:1px solid #d1dce8;vertical-align:top}thead{background:#eaf1f8}
+td:first-child,td:last-child,th{white-space:nowrap}td{font-family:ui-monospace,monospace;overflow-wrap:anywhere}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+a{color:#155b87}:focus-visible{outline:3px solid #155b87;outline-offset:2px}
+@media(max-width:650px){main{padding:1rem .5rem}.panel{padding:1rem}.grid{grid-template-columns:1fr}}
+@media print{body{background:white}main{max-width:none;padding:0}.panel{border:0;padding:0}}
+</style></head><body><main><h1>Backup restore review</h1>
+<p>Current-file checks for one completed synthetic Rustic exercise. No backup, restore or deletion command is run by this review.</p>
+<section class="panel"><h2>Current files match</h2><div class="grid"><section><h2>Source vs saved baseline</h2><p>Passed</p></section><section><h2>Restore vs saved baseline</h2><p>Passed</p></section><section><h2>Source vs restore bytes</h2><p>Passed</p></section></div>
+<p>5 expected regular files · 2 expected directories · 42 expected file bytes</p></section>
+<section class="panel"><h2>Recorded exercise</h2><p>Recorded drill: passed. This is the saved result, separate from the current-file checks above.</p>
+<p>Restored first snapshot: <code>c25d8da7f4c44534d72f73eab82547f3ac9a68c8827c29797c6742721883398c</code><br>Second snapshot: <code>963fa2d603e920ff0f93ad3135af4a9141c7e5d23e9d8561d09cb1485bc0bdde</code></p>
+<p>Repeat file/tree data added: 0. The second backup still creates a snapshot record. The saved run reports a successful read-data check and rejection of the wrong password.</p>
+<p>Rustic binary SHA-256: <code>7ce71a46f8f5b830f3c5ff77ce4811babe9deea1a96cc45985e58881f2c7fba7</code></p></section>
+<section class="panel"><h2>Current manifest comparison</h2><p>Changed paths: None</p>
+<div class="scroll" tabindex="0" role="region" aria-label="Manifest comparison"><table><thead><tr><th scope="col">Path</th><th scope="col">Saved baseline</th><th scope="col">Current source</th><th scope="col">Current restore</th><th scope="col">Result</th></tr></thead><tbody><tr><td>binary.bin</td><td>6 bytes · a10b222a5dfa115cb2b1a2e3eb885400cf70b53dcf05dec9c6c55dc25d238714</td><td>6 bytes · a10b222a5dfa115cb2b1a2e3eb885400cf70b53dcf05dec9c6c55dc25d238714</td><td>6 bytes · a10b222a5dfa115cb2b1a2e3eb885400cf70b53dcf05dec9c6c55dc25d238714</td><td>Matches</td></tr><tr><td>copy-a.txt</td><td>10 bytes · 58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb</td><td>10 bytes · 58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb</td><td>10 bytes · 58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb</td><td>Matches</td></tr><tr><td>empty.dat</td><td>0 bytes · e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</td><td>0 bytes · e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</td><td>0 bytes · e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</td><td>Matches</td></tr><tr><td>nested</td><td>Directory</td><td>Directory</td><td>Directory</td><td>Matches</td></tr><tr><td>nested/copy-b.txt</td><td>10 bytes · 58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb</td><td>10 bytes · 58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb</td><td>10 bytes · 58100dc8fc06562ce3e578231dc948e083520ee49c4b4ee5a5a28bb4b4003feb</td><td>Matches</td></tr><tr><td>nested/日本語.txt</td><td>16 bytes · e1ef69691bf0e0e47e167c7748335b879971191c5741f1c4faa213a3d1124520</td><td>16 bytes · e1ef69691bf0e0e47e167c7748335b879971191c5741f1c4faa213a3d1124520</td><td>16 bytes · e1ef69691bf0e0e47e167c7748335b879971191c5741f1c4faa213a3d1124520</td><td>Matches</td></tr><tr><td>nested/空のフォルダ</td><td>Directory</td><td>Directory</td><td>Directory</td><td>Matches</td></tr></tbody></table></div>
+<p>Swipe sideways on small screens, or focus the table and use the arrow keys.</p></section>
+<details class="panel"><summary>Evidence and limits</summary><pre>{
+  &quot;schema_version&quot;: 1,
+  &quot;status&quot;: &quot;matched&quot;,
+  &quot;checks&quot;: {
+    &quot;current_source_matches_saved&quot;: true,
+    &quot;current_restore_matches_saved&quot;: true,
+    &quot;current_literal_file_bytes_match&quot;: true
+  },
+  &quot;recorded_drill_status&quot;: &quot;passed&quot;,
+  &quot;input_result_sha256&quot;: &quot;2fa228fdc522cc0812d1514c5948353381b5cfaaca8684a9949e6d948ae7010f&quot;,
+  &quot;input_saved_manifest_sha256&quot;: &quot;ec169edc79f9aeea750a1a7445471462e5e961a7acde18d0ee4af22c4d390c00&quot;,
+  &quot;expected_regular_files&quot;: 5,
+  &quot;expected_directories&quot;: 2,
+  &quot;expected_file_bytes&quot;: 42,
+  &quot;changed_paths&quot;: [],
+  &quot;scope&quot;: &quot;Current generated source/restore paths, sizes, SHA-256 and literal file bytes only; editable local records are not authenticated.&quot;
+}</pre>
+<p><a href="review.json">Current review</a> · <a href="recorded-checks.json">Recorded check fields</a> · <a href="saved-manifest.json">Saved baseline</a> · <a href="current-source.json">Current source</a> · <a href="current-restore.json">Current restore</a></p>
+<p>Names, sizes and hashes are retained; file contents, passwords, backup keys and the machine-specific CLI path are not copied. The original run remains separate.</p>
+</details><section class="panel"><h2>Scope</h2><p>The drill uses generated fixtures and a fixed public demo password. This review does not authenticate editable records or prove production recovery, metadata/symlink/special-file fidelity, power-loss safety, concurrent-read consistency or cloud recovery.</p></section>
+</main></body></html>
